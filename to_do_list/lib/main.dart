@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: TarefaView(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
