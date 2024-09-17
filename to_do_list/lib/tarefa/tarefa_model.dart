@@ -4,6 +4,7 @@ class TarefaModel {
   String descricao;
   bool status;
  DateTime? createdAt;  // data de criacao (opcional)
+ String prioridade;
 
   TarefaModel({
     this.id,
@@ -11,6 +12,7 @@ class TarefaModel {
     this.descricao = '',
     this.status = false, // por padrao inicia como false
     this.createdAt, // pode ser inicializada com DateTime.now() ao criar tarefa
+    this.prioridade = '',
   }){
 
     //inicia com a data atual caso n seja definida uma.
@@ -26,7 +28,8 @@ class TarefaModel {
       'status': status
           ? 1
           : 0, // converte de bool para int para salvar no banco de dados como numero
-      'createdAt': createdAt?.toIso8601String() // Converte data para string ISO 8601
+      'createdAt': createdAt?.toIso8601String(), // Converte data para string ISO 8601
+      'prioridade': prioridade,
     };
   }
 
@@ -38,6 +41,7 @@ class TarefaModel {
       descricao: json['descricao'],
       status: json['status'] == 1, // transforma de bool para int.
       createdAt:json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      prioridade:json['prioridade'],
     );
   }
 }

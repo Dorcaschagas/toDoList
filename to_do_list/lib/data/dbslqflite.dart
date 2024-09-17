@@ -2,7 +2,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:to_do_list/tarefa/tarefa_model.dart';
 
-// import '../model/task.dart';
 class Dbslqflite {
   static Dbslqflite _instance = Dbslqflite._internal();
 
@@ -20,24 +19,27 @@ class Dbslqflite {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'to_do_list');
-    return openDatabase(path, version: 2, onCreate: (db, version) {
-      return db.execute('''
-            CREATE TABLE tasks(
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              titulo TEXT,
-              descricao text,
-              status INTEGER,
-              createdAt text
-            )
-          ''');
-    },
-    onUpgrade: (db, oldVersion, newVersion){
-      if(oldVersion < newVersion){
-        db.execute('''
-          ALTER TABLE tasks ADD COLUMN createdAt TEXT
-        '''); 
-      }
-    }
+    return openDatabase(
+      path,
+      version: 2, // Aumente a versão aqui para disparar o onUpgrade
+      onCreate: (db, version) {
+        return db.execute('''
+        CREATE TABLE tasks(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          titulo TEXT,
+          descricao TEXT,
+          status INTEGER,
+          createdAt TEXT,
+          prioridade TEXT
+        )
+      ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) {
+        if (oldVersion < newVersion) {
+          // Adicionar a coluna prioridade se ela não existir
+          db.execute('ALTER TABLE tasks ADD COLUMN prioridade TEXT');
+        }
+      },
     );
   }
 
@@ -65,7 +67,6 @@ class Dbslqflite {
       whereArgs: [task.id],
     );
   }
-
 
   Future<int> deletarTaks(int id) async {
     final db = await database;

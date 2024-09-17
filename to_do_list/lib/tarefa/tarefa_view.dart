@@ -15,6 +15,11 @@ class _TarefaViewState extends State<TarefaView> {
   bool _expandeFormulario = false;
   final _focusNodeTitulo = FocusNode();
   final _focusNodeDescricao = FocusNode();
+  final _focusNodeDatahora = FocusNode();
+  final _focusNodePrioridade = FocusNode();
+  String _iconeprioridade = 'Baixa';
+  String _iconeCheckbox = 'todos';
+  bool _editando = false;
 
   @override
   void initState() {
@@ -35,6 +40,8 @@ class _TarefaViewState extends State<TarefaView> {
   void _fecharFocus() {
     _focusNodeTitulo.unfocus(); // Remove o foco do título
     _focusNodeDescricao.unfocus(); // Remove o foco da descrição
+    _focusNodeDatahora.unfocus(); // Remove o foco da descrição
+    _focusNodePrioridade.unfocus(); // Remove o foco da descrição
     setState(() {
       _expandeFormulario = false;
     });
@@ -83,13 +90,25 @@ class _TarefaViewState extends State<TarefaView> {
             children: [
               Text("Descrição:"),
               SizedBox(height: 8),
-              Text(tarefa.descricao),
+              Text(
+                tarefa.descricao,
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
               SizedBox(height: 16),
+              Text('Prioridade:'),
+              SizedBox(height: 8),
+              Text(
+                tarefa.prioridade,
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              SizedBox(height: 8),
               Text("Criado em:"),
               SizedBox(height: 8),
-              Text(tarefa.createdAt != null
-                  ? controller.formatarData(tarefa.createdAt)
-                  : 'Não Disponível'),
+              Text(
+                  tarefa.createdAt != null
+                      ? controller.formatarData(tarefa.createdAt)
+                      : 'Não Disponível',
+                  style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
           actions: [
@@ -109,15 +128,85 @@ class _TarefaViewState extends State<TarefaView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-Do List'),
+        title: const Text(
+          'Gerenciador de Tarefas',
+          style: TextStyle(fontSize: 18),
+        ),
         actions: [
+          IconButton(
+            onPressed: _editando ? null : () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      setState(
+                        () {
+                          DateTime dataFiltro = DateTime(
+                            pickedDate.year,
+                            pickedDate.month,
+                            pickedDate.day,
+                          );
+                          controller.filtro(
+                            controller.sttsSelecionando,
+                            dataSelecionada: dataFiltro,
+                            prioridadeSelecionada: controller.txtPrioridade,
+                          );
+                        },
+                      );
+                    }
+                  },
+            // Cor do ícone desabilitado
+            icon: Icon(Icons.calendar_today),
+            disabledColor: Colors.grey,
+          ),
           PopupMenuButton<String>(
-            icon: Icon(Icons.filter_list), // Ícone de filtro
-            onSelected: (String filtroSelecionado) {
+            icon: Icon(controller
+                .iconePrioridade(_iconeprioridade)), // Ícone de filtro
+            onSelected: _editando ? null : (String prioridade) {
+              _fecharFocus();
+              setState(() {
+                _iconeprioridade = prioridade;
+                controller.filtro(controller.sttsSelecionando,
+                    dataSelecionada: controller.dataSelecionada,
+                    prioridadeSelecionada: prioridade);
+              });
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'todosPri',
+                child: Text('Todos'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Baixa',
+                child: Text('Baixa'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Media',
+                child: Text('Média'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Alta',
+                child: Text('Alta'),
+              ),
+            ],
+          ),
+          PopupMenuButton<String>(
+            icon: Icon(
+                controller.iconePrioridade(_iconeCheckbox)), // Ícone de filtro
+            onSelected: _editando ? null : (String filtroSelecionado) {
               _fecharFocus();
               controller.carregarTarefas(filtroSelecionado).then((_) {
-                setState(() {});
+                setState(() {
+                  _iconeCheckbox = filtroSelecionado;
+                });
               });
+              // setState(() {
+              //   controller.filtro(filtroSelecionado, dataSelecionada:  controller.dataSelecionada, prioridadeSelecionada: controller.txtPrioridade);
+              //   _iconeCheckbox = filtroSelecionado;
+              // });
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
@@ -130,7 +219,7 @@ class _TarefaViewState extends State<TarefaView> {
               ),
               const PopupMenuItem<String>(
                 value: 'incompletos',
-                child: Text('Sem Marcar'),
+                child: Text('Abertos'),
               ),
             ],
           ),
@@ -155,23 +244,94 @@ class _TarefaViewState extends State<TarefaView> {
                       FocusScope.of(context).requestFocus(_focusNodeTitulo);
                     },
                     child: TextField(
-                      decoration: InputDecoration(label: Text("Título:")),
+                      decoration: InputDecoration(
+                          label: Text(
+                        "Título:",
+                        style: TextStyle(fontSize: 12),
+                      )),
                       controller: controller.txtNome,
                       focusNode: _focusNodeTitulo,
                     ),
                   ),
                   AnimatedContainer(
                     duration: Duration(milliseconds: 300),
-                    height: _expandeFormulario ? 130 : 0,
+                    height: _expandeFormulario ? 240 : 0,
                     child: _expandeFormulario
                         ? Column(
                             children: [
                               TextField(
                                 decoration: InputDecoration(
-                                  label: Text("Descrição:"),
+                                  label: Text("Descrição:",
+                                      style: TextStyle(fontSize: 12)),
                                 ),
                                 controller: controller.txtDescricao,
                                 focusNode: _focusNodeDescricao,
+                              ),
+                              TextField(
+                                decoration: InputDecoration(
+                                  label: Text("Data e Hora:",
+                                      style: TextStyle(fontSize: 12)),
+                                  hintText: controller.txtDataHora.text.isEmpty
+                                      ? "Selecione Data e Hora"
+                                      : controller.txtDataHora.text,
+                                ),
+                                readOnly: true,
+                                controller: controller.txtDataHora,
+                                focusNode: _focusNodeDatahora,
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2101),
+                                  );
+                                  if (pickedDate != null) {
+                                    TimeOfDay? pickedTime =
+                                        await showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.now(),
+                                    );
+                                    if (pickedTime != null) {
+                                      setState(
+                                        () {
+                                          controller.dataSelecionada = DateTime(
+                                            pickedDate.year,
+                                            pickedDate.month,
+                                            pickedDate.day,
+                                            pickedTime.hour,
+                                            pickedTime.minute,
+                                          );
+                                          controller.txtDataHora.text =
+                                              controller.formatarData(
+                                                  controller.dataSelecionada!);
+                                        },
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                              DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  label: Text("Prioridade:",
+                                      style: TextStyle(fontSize: 12)),
+                                ),
+                                value: controller.txtPrioridade,
+                                items: <String>['Baixa', 'Media', 'Alta']
+                                    .map((String valor) {
+                                  return DropdownMenuItem<String>(
+                                    child: Text(valor,
+                                        style: TextStyle(fontSize: 12)),
+                                    value: valor,
+                                  );
+                                }).toList(),
+                                onChanged: (String? novoValor) {
+                                  setState(() {
+                                    controller.txtPrioridade = novoValor!;
+                                  });
+                                },
+                              ),
+                              SizedBox(
+                                height: 12,
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -182,6 +342,7 @@ class _TarefaViewState extends State<TarefaView> {
                                             _fecharFocus();
                                             controller.limparCampos();
                                             tarefaEditada = null;
+                                            _editando = false;
                                           },
                                           style: TextButton.styleFrom(
                                             backgroundColor: Colors.grey[400],
@@ -204,6 +365,8 @@ class _TarefaViewState extends State<TarefaView> {
                                             .then((_) {
                                           setState(() {
                                             tarefaEditada = null;
+                                            _editando = false;
+                                            _fecharFocus();
                                           });
                                         });
                                       }
@@ -237,90 +400,158 @@ class _TarefaViewState extends State<TarefaView> {
                   if (tarefaEditada != null && tarefa.id == tarefaEditada!.id) {
                     return SizedBox.shrink();
                   }
-                  return ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                    leading: Checkbox(
-                      value: tarefa.status,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          tarefa.status = value!;
-                        });
-                        controller.atualizarStatus(tarefa).then((_) {
-                          setState(() {});
-                        });
-                      },
+                  return Container(
+                    margin:
+                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+                    padding: EdgeInsets.all(1.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Cor de fundo
+                      borderRadius:
+                          BorderRadius.circular(8.0), // Bordas arredondadas
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: Offset(0, 2), // Sombra da borda
+                        ),
+                      ],
                     ),
-                    title: Text(
-                      tarefa.titulo,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        decoration:
-                            tarefa.status ? TextDecoration.lineThrough : null,
+                    child: ListTile(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      leading: SizedBox(
+                        width: 24,
+                        child: Checkbox(
+                          value: tarefa.status,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              tarefa.status = value!;
+                            });
+                            controller.atualizarStatus(tarefa).then((_) {
+                              setState(() {});
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    subtitle: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            tarefa.descricao,
+                      title: Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tarefa.titulo,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            style: TextStyle(
+                              decoration: tarefa.status
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          tarefa.createdAt != null
-                              ? controller.formatarData(tarefa.createdAt)
-                              : '',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 24,
-                          child: IconButton(
-                            // iconSize: 18,
-                            onPressed: () {
-                              controller.preencherCampos(tarefa);
-                              setState(() {
-                                tarefaEditada = tarefa;
-                                _expandeFormulario =
-                                    true; // Garante que o formulário é expandido para edição
-                              });
-                            },
-                            icon: Icon(Icons.edit),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                tarefa.createdAt != null
+                                    ? controller.formatarData(tarefa.createdAt)
+                                    : '',
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 2),
+                                decoration: BoxDecoration(
+                                    color: tarefa.prioridade == 'Baixa'
+                                        ? Colors.green[100]
+                                        : tarefa.prioridade == 'Media'
+                                            ? Colors.amber[400]
+                                            : tarefa.prioridade == 'Alta'
+                                                ? Colors.red[400]
+                                                : Colors.grey[50],
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      color: tarefa.prioridade == 'Baixa'
+                                          ? Colors
+                                              .green // Cor da borda para 'Baixa'
+                                          : tarefa.prioridade == 'Média'
+                                              ? Colors
+                                                  .amber // Cor da borda para 'Média'
+                                              : tarefa.prioridade == 'Alta'
+                                                  ? Colors
+                                                      .red // Cor da borda para 'Alta'
+                                                  : Colors
+                                                      .grey, // Cor da borda padrão
+                                      width: 1.0, // Largura da borda
+                                    )),
+                                child: Text(
+                                  tarefa.prioridade,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 10),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        SizedBox(
-                          width: 24,
-                          child: IconButton(
-                            // iconSize: 18,
-                            onPressed: () {
-                              _confirmaDelecao(tarefa);
-                            },
-                            icon: Icon(Icons.delete),
+                        ],
+                      ),
+                      subtitle: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              tarefa.descricao,
+                              overflow: TextOverflow.ellipsis,
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 14),
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        SizedBox(
-                          width: 24,
-                          child: IconButton(
-                            // iconSize: 18,
-                            onPressed: () {
-                              _mostrarMaisDetalhes(tarefa);
-                            },
-                            icon: Icon(Icons.info),
+                          // SizedBox(width: 8),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 30,
+                            child: IconButton(
+                              // iconSize: 18,
+                              onPressed: () {
+                                controller.preencherCampos(tarefa);
+                                setState(() {
+                                  tarefaEditada = tarefa;
+                                  _editando = true;
+                                  _expandeFormulario =
+                                      true; // Garante que o formulário é expandido para edição
+                                });
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                      ],
+                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 30,
+                            child: IconButton(
+                              // iconSize: 18,
+                              onPressed: () {
+                                _confirmaDelecao(tarefa);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 30,
+                            child: IconButton(
+                              // iconSize: 18,
+                              onPressed: () {
+                                _mostrarMaisDetalhes(tarefa);
+                              },
+                              icon: Icon(Icons.info),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                        ],
+                      ),
                     ),
                   );
                 },
