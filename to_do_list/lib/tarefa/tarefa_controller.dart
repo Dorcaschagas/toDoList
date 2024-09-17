@@ -16,7 +16,6 @@ class TarefaController {
   bool txtStatus = false;
   DateTime? dataSelecionada; 
 
-  // Preencher campos para editar.
   void preencherCampos(TarefaModel tarefa) {
     txtNome.text = tarefa.titulo;
     txtDescricao.text = tarefa.descricao;
@@ -47,7 +46,7 @@ class TarefaController {
       await Dbslqflite().insertTask(tarefa);
       limparCampos();
       await carregarTarefas(
-          sttsSelecionando); // Recarrega as tarefas após salvar
+          sttsSelecionando); 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Preencha o título")),
@@ -65,7 +64,7 @@ class TarefaController {
     });
 
     sttsSelecionando = filtroSelecionado;
-    filtro(filtroSelecionado); // Aplica o filtro
+    filtro(filtroSelecionado);
   }
 
   Future<void> editarTarefa(TarefaModel tarefa, BuildContext context) async {
@@ -77,7 +76,7 @@ class TarefaController {
       await Dbslqflite().updatetask(tarefa);
       limparCampos();
       await carregarTarefas(
-          sttsSelecionando); // Recarrega as tarefas após edição
+          sttsSelecionando); 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Preencha o título")),
@@ -88,13 +87,13 @@ class TarefaController {
   Future<void> deletarTarefa(int id) async {
     await Dbslqflite().deletarTaks(id);
     await carregarTarefas(
-        sttsSelecionando); // Recarrega as tarefas após exclusão
+        sttsSelecionando); 
   }
 
   Future<void> atualizarStatus(TarefaModel tarefa) async {
     await Dbslqflite().updatetask(tarefa);
     await carregarTarefas(
-        sttsSelecionando); // Recarrega as tarefas após atualização do status
+        sttsSelecionando); 
   }
 
   void limparCampos() {

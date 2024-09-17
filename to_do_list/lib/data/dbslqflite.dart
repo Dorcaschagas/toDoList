@@ -21,7 +21,7 @@ class Dbslqflite {
     String path = join(await getDatabasesPath(), 'to_do_list');
     return openDatabase(
       path,
-      version: 2, // Aumente a versão aqui para disparar o onUpgrade
+      version: 1,
       onCreate: (db, version) {
         return db.execute('''
         CREATE TABLE tasks(
@@ -34,12 +34,12 @@ class Dbslqflite {
         )
       ''');
       },
-      onUpgrade: (db, oldVersion, newVersion) {
-        if (oldVersion < newVersion) {
-          // Adicionar a coluna prioridade se ela não existir
-          db.execute('ALTER TABLE tasks ADD COLUMN prioridade TEXT');
-        }
-      },
+      // onUpgrade: (db, oldVersion, newVersion) {
+      //   if (oldVersion < newVersion) {
+      //     // Adicionar a coluna prioridade se ela não existir
+      //     db.execute('ALTER TABLE tasks ADD COLUMN prioridade TEXT');
+      //   }
+      // },
     );
   }
 

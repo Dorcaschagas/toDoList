@@ -38,10 +38,10 @@ class _TarefaViewState extends State<TarefaView> {
   }
 
   void _fecharFocus() {
-    _focusNodeTitulo.unfocus(); // Remove o foco do título
-    _focusNodeDescricao.unfocus(); // Remove o foco da descrição
-    _focusNodeDatahora.unfocus(); // Remove o foco da descrição
-    _focusNodePrioridade.unfocus(); // Remove o foco da descrição
+    _focusNodeTitulo.unfocus();
+    _focusNodeDescricao.unfocus();
+    _focusNodeDatahora.unfocus();
+    _focusNodePrioridade.unfocus();
     setState(() {
       _expandeFormulario = false;
     });
@@ -57,13 +57,13 @@ class _TarefaViewState extends State<TarefaView> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false); // cancela a exclusão
+                Navigator.of(context).pop(false); 
               },
               child: Text("Cancelar"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true); // confirma a exclusão
+                Navigator.of(context).pop(true);
               },
               child: Text("Excluir"),
             ),
@@ -134,7 +134,9 @@ class _TarefaViewState extends State<TarefaView> {
         ),
         actions: [
           IconButton(
-            onPressed: _editando ? null : () async {
+            onPressed: _editando
+                ? null
+                : () async {
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
@@ -158,22 +160,23 @@ class _TarefaViewState extends State<TarefaView> {
                       );
                     }
                   },
-            // Cor do ícone desabilitado
             icon: Icon(Icons.calendar_today),
             disabledColor: Colors.grey,
           ),
           PopupMenuButton<String>(
             icon: Icon(controller
-                .iconePrioridade(_iconeprioridade)), // Ícone de filtro
-            onSelected: _editando ? null : (String prioridade) {
-              _fecharFocus();
-              setState(() {
-                _iconeprioridade = prioridade;
-                controller.filtro(controller.sttsSelecionando,
-                    dataSelecionada: controller.dataSelecionada,
-                    prioridadeSelecionada: prioridade);
-              });
-            },
+                .iconePrioridade(_iconeprioridade)), 
+            onSelected: _editando
+                ? null
+                : (String prioridade) {
+                    _fecharFocus();
+                    setState(() {
+                      _iconeprioridade = prioridade;
+                      controller.filtro(controller.sttsSelecionando,
+                          dataSelecionada: controller.dataSelecionada,
+                          prioridadeSelecionada: prioridade);
+                    });
+                  },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'todosPri',
@@ -195,19 +198,21 @@ class _TarefaViewState extends State<TarefaView> {
           ),
           PopupMenuButton<String>(
             icon: Icon(
-                controller.iconePrioridade(_iconeCheckbox)), // Ícone de filtro
-            onSelected: _editando ? null : (String filtroSelecionado) {
-              _fecharFocus();
-              controller.carregarTarefas(filtroSelecionado).then((_) {
-                setState(() {
-                  _iconeCheckbox = filtroSelecionado;
-                });
-              });
-              // setState(() {
-              //   controller.filtro(filtroSelecionado, dataSelecionada:  controller.dataSelecionada, prioridadeSelecionada: controller.txtPrioridade);
-              //   _iconeCheckbox = filtroSelecionado;
-              // });
-            },
+                controller.iconePrioridade(_iconeCheckbox)), 
+            onSelected: _editando
+                ? null
+                : (String filtroSelecionado) {
+                    _fecharFocus();
+                    controller.carregarTarefas(filtroSelecionado).then((_) {
+                      setState(() {
+                        _iconeCheckbox = filtroSelecionado;
+                      });
+                    });
+                    // setState(() {
+                    //   controller.filtro(filtroSelecionado, dataSelecionada:  controller.dataSelecionada, prioridadeSelecionada: controller.txtPrioridade);
+                    //   _iconeCheckbox = filtroSelecionado;
+                    // });
+                  },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'todos',
@@ -227,7 +232,7 @@ class _TarefaViewState extends State<TarefaView> {
       ),
       body: GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus(); // Remove o foco de qualquer campo
+          FocusScope.of(context).unfocus(); 
           _fecharFocus();
         },
         child: Column(
@@ -356,17 +361,21 @@ class _TarefaViewState extends State<TarefaView> {
                                   TextButton(
                                     onPressed: () {
                                       if (tarefaEditada == null) {
-                                        controller.salvar(context).then((_) {});
-                                        _fecharFocus();
+                                        controller.salvar(context).then((_) {
+                                          setState(() {});
+                                        });
+                                        setState(() {
+                                          _fecharFocus();
+                                        });
                                       } else {
                                         controller
                                             .editarTarefa(
                                                 tarefaEditada!, context)
                                             .then((_) {
                                           setState(() {
+                                            _fecharFocus();
                                             tarefaEditada = null;
                                             _editando = false;
-                                            _fecharFocus();
                                           });
                                         });
                                       }
@@ -405,15 +414,15 @@ class _TarefaViewState extends State<TarefaView> {
                         EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
                     padding: EdgeInsets.all(1.0),
                     decoration: BoxDecoration(
-                      color: Colors.white, // Cor de fundo
+                      color: Colors.white, 
                       borderRadius:
-                          BorderRadius.circular(8.0), // Bordas arredondadas
+                          BorderRadius.circular(8.0), 
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.2),
                           spreadRadius: 1,
                           blurRadius: 4,
-                          offset: Offset(0, 2), // Sombra da borda
+                          offset: Offset(0, 2), 
                         ),
                       ],
                     ),
@@ -473,16 +482,16 @@ class _TarefaViewState extends State<TarefaView> {
                                     border: Border.all(
                                       color: tarefa.prioridade == 'Baixa'
                                           ? Colors
-                                              .green // Cor da borda para 'Baixa'
+                                              .green 
                                           : tarefa.prioridade == 'Média'
                                               ? Colors
-                                                  .amber // Cor da borda para 'Média'
+                                                  .amber 
                                               : tarefa.prioridade == 'Alta'
                                                   ? Colors
-                                                      .red // Cor da borda para 'Alta'
+                                                      .red 
                                                   : Colors
-                                                      .grey, // Cor da borda padrão
-                                      width: 1.0, // Largura da borda
+                                                      .grey, 
+                                      width: 1.0,
                                     )),
                                 child: Text(
                                   tarefa.prioridade,
@@ -521,7 +530,7 @@ class _TarefaViewState extends State<TarefaView> {
                                   tarefaEditada = tarefa;
                                   _editando = true;
                                   _expandeFormulario =
-                                      true; // Garante que o formulário é expandido para edição
+                                      true; 
                                 });
                               },
                               icon: Icon(Icons.edit),
