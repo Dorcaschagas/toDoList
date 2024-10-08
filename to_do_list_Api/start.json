@@ -1,0 +1,19 @@
+{
+    "apps": {
+        "script": "/home/dorca3858/applications/to_do_list/index.js",
+        "name": "to_do_list",
+        "max_memory_restart": "128M",
+        "exec_mode": "fork",
+        "ignore_watch": "[\"[\\/\\]\\./\", \"node_modules\"]",
+        "watch": false,
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "out_file": "/home/dorca3858/applications/to_do_list/stdout.log",
+        "error_file": "/home/dorca3858/applications/to_do_list/stdout.log",
+        "pid_file": "/home/dorca3858/applications/to_do_list/pid.pid",
+        "interpreter": "/usr/nodejs/node-v18.17.1/bin/node",
+        "env": {
+            "NODE_ENV": "production",
+            "PORT": "52461"
+        }
+    }
+}
