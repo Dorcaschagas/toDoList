@@ -51,7 +51,7 @@ class TarefaController {
   }
 
   Future<void> editarTarefa(TarefaModel tarefa, BuildContext context) async {
-        print(txtGrupo.text);
+        // print(txtGrupo.text);
     tarefa.titulo = txtNome.text;
     tarefa.descricao = txtDescricao.text;
     tarefa.prioridade = txtPrioridade;
@@ -78,7 +78,7 @@ class TarefaController {
 
   // ========================== Criar ===========================
   Future<void> salvar(BuildContext context) async {
-    print(txtGrupo.text);
+    // print(txtGrupo.text);
     TarefaModel tarefa = TarefaModel(
       titulo: txtNome.text,
       descricao: txtDescricao.text,
@@ -102,7 +102,7 @@ class TarefaController {
 
   // ========================== outras funcoes ==========================
   void preencherCampos(TarefaModel tarefa) {
-        print(txtGrupo.text);
+        // print(txtGrupo.text);
     txtNome.text = tarefa.titulo;
     txtDescricao.text = tarefa.descricao;
     txtPrioridade = tarefa.prioridade;

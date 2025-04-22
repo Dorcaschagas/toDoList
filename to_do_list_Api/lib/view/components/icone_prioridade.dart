@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 
-class Components {
-    IconData iconePrioridade(String prioridade){
+class IconePrioridade {
+    IconData getIconePrioridade(String prioridade){
     switch(prioridade){
       case'Baixa':
       return Icons.low_priority;

@@ -431,9 +431,9 @@ class _TarefaViewState extends State<TarefaView> {
                                 items: <String>['Baixa', 'Media', 'Alta']
                                     .map((String valor) {
                                   return DropdownMenuItem<String>(
+                                    value: valor,
                                     child: Text(valor,
                                         style: TextStyle(fontSize: 12)),
-                                    value: valor,
                                   );
                                 }).toList(),
                                 onChanged: (String? novoValor) {

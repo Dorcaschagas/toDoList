@@ -19,7 +19,7 @@ class ApiService {
 
   //criar nova tarefa
   Future<void> createTask(TarefaModel task) async {
-    print(task.toJson());
+    // print(task.toJson());
     final response = await http.post(
       Uri.parse('$baseUrl/tarefas'),
       headers: {'Content-Type': 'application/json'},

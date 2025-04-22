@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class Dbslqflite {
-  static Dbslqflite _instance = Dbslqflite._internal();
+  static final Dbslqflite _instance = Dbslqflite._internal();
 
   static Database? _database;
 
