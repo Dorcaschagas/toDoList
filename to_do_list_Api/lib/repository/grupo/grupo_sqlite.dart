@@ -9,6 +9,7 @@ class GrupoQuerySqlite {
 
   Future<List<GrupoModel>> getGrupo() async {
     final db = await Dbslqflite().database;
+    print('editando online usando github.dev');
 
     final List<Map<String, dynamic>> maps = await db.query('grupos');
     return List.generate(maps.length, (i) {
